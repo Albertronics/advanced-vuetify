@@ -1,0 +1,200 @@
+<template>
+	<v-form v-model="valid">
+		<v-text-field
+				v-model="date" v-mask="dateMask" persistent-hint
+				:hint="day" :placeholder="format" :label="label"
+				:color="color" :outlined="outlined" :dense="dense"
+				:rules="rules" append-icon="mdi-calendar" @click:append="dialogPicker = true" />
+
+		<v-dialog ref="dialog" v-model="dialogPicker" :return-value.sync="date" persistent width="290px">
+			<v-date-picker v-model="dialogPickerDate" :first-day-of-week="firstDayOfWeek" :min="onlyFuture ? new Date().toJSON() : null">
+				<v-spacer></v-spacer>
+				<v-btn text :color="color" @click="dialogPicker = false">{{ translate('cancel') }}</v-btn>
+				<v-btn text :color="color" @click="$refs.dialog.save(date)">{{ translate('ok') }}</v-btn>
+			</v-date-picker>
+		</v-dialog>
+	</v-form>
+</template>
+
+<script>
+	import { mask } from 'vue-the-mask';
+	import dayjs from 'dayjs'
+	import customParseFormat from 'dayjs/plugin/customParseFormat'
+	import(`dayjs/locale/it`);
+	import(`dayjs/locale/en`);
+	dayjs.extend(customParseFormat);
+
+	import * as languages from '../../lang'
+
+	export default
+	{
+		name: 'v-advanced-date-picker',
+
+		directives: { mask },
+
+		props:
+		{
+			value: { required: true },
+
+			firstDayOfWeek: {
+				type: String,
+				default: '0',
+				validator: (value) => ['0', '1', '2', '3', '4', '5', '6'].indexOf(value) !== -1
+			},
+
+			format: {
+				type: String,
+				default: 'YYYY-MM-DD',
+				validator: (value) => ['DD/MM/YYYY', 'DD-MM-YYYY', 'YYYY-MM-DD', 'YYYY/MM/DD'].indexOf(value) !== -1
+			},
+
+			inputFormat: {
+				type: String,
+				default: 'YYYY-MM-DD',
+				validator: (value) => ['DD/MM/YYYY', 'DD-MM-YYYY', 'YYYY-MM-DD', 'YYYY/MM/DD'].indexOf(value) !== -1
+			},
+
+			outputFormat: {
+				type: String,
+				default: 'YYYY-MM-DD',
+				validator: (value) => ['DD/MM/YYYY', 'DD-MM-YYYY', 'YYYY-MM-DD', 'YYYY/MM/DD'].indexOf(value) !== -1
+			},
+
+			label: { type: String },
+			color: { type: String, default: 'primary' },
+			mandatory: { type: Boolean, default: false },
+			outlined: { type: Boolean, default: false },
+			dense: { type: Boolean, default: false },
+			onlyFuture: { type: Boolean, default: false },
+			showDay: { type: Boolean, default: false }
+		},
+
+		data()
+		{
+			return {
+				validFormats: ['DD/MM/YYYY', 'DD-MM-YYYY', 'YYYY-MM-DD', 'YYYY/MM/DD'],
+				masks: ['##/##/####', '##-##-####', '####-##-##', '####/##/##'],
+
+				date: null,
+
+				dialogPicker: false,
+				valid: false
+			};
+		},
+
+		watch:
+		{
+			date:
+			{
+				immediate: true,
+				handler(val)
+				{
+					this.$emit('input', dayjs(val, this.format).format(this.outputFormat));
+				}
+			},
+
+			day(val) {
+				this.$emit('weekDay', val);
+			},
+
+			valid:
+			{
+				immediate: true,
+				handler(val)
+				{
+					if (this.mandatory)	{
+						this.$emit('valid', val);
+					}
+				}
+			}
+		},
+
+		mounted() {
+			this.date = this.value ? dayjs(this.value, this.inputFormat).format(this.format) : dayjs().format(this.format);
+		},
+
+		computed:
+		{
+			dialogPickerDate:
+			{
+				get: function ()
+				{
+					const date = dayjs(this.date, this.format);
+
+					if(date.isValid())
+						return date.format(this.validFormats[2]);
+
+					return null
+				},
+
+				set: function(val) {
+					this.date = dayjs(val, this.validFormats[2]).format(this.format)
+				}
+			},
+
+			dateMask() {
+				return this.masks[this.validFormats.indexOf(this.format)];
+			},
+
+			day()
+			{
+				if (!this.showDay || !this.date) {
+					return '';
+				}
+
+				return dayjs(this.date, this.format).locale(this.$vuetify.lang.current).format('dddd');
+			},
+
+			rules()
+			{
+				const rules = [
+					v => (!!v ? this.isValidDate(v) : true) || 'Data non valida'
+				];
+
+				if (this.mandatory)	{
+					rules.push(v => !!v || 'Campo necessario');
+				}
+
+				if (this.onlyFuture)	{
+					rules.push(v => !dayjs(v, this.format).isBefore(dayjs(), 'day') || 'Data nel passato');
+				}
+
+				return rules;
+			}
+		},
+
+		methods:
+		{
+			daysInMonth (m, y)
+			{
+				switch (m)
+				{
+					case 1 :
+						return (y % 4 === 0 && y % 100) || y % 400 === 0 ? 29 : 28;
+					case 8 : case 3 : case 5 : case 10 :
+						return 30;
+					default :
+						return 31
+				}
+			},
+
+			isValidDate (date)
+			{
+				const newDate = dayjs(date, this.format).format('YYYY-MM-DD');
+
+				if(newDate === 'Invalid Date' || dayjs(newDate, 'YYYY-MM-DD').format(this.format) !== date)
+					return false;
+
+				let [y, m, d] = newDate.split('-');
+
+				m = parseInt(m, 10) - 1;
+
+				return m >= 0 && m < 12 && d > 0 && d <= this.daysInMonth(m, y);
+			},
+
+			translate (key) {
+				return languages[this.$vuetify.lang.current][key]
+			}
+		}
+	};
+</script>

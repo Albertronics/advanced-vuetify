@@ -1,0 +1,7 @@
+./public
+./dev
+./.github
+./.idea
+.browserlistrc
+.editorconfig
+./jest.config.js

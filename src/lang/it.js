@@ -1,0 +1,22 @@
+export default {
+  "filter": "Filtra",
+  "groupBy": "Raggruppa",
+	"all": "Tutti",
+	"no": "No",
+	"yes": "Si",
+	"selected": "Selezionati",
+	"notSelected": "Non selezionati",
+	"cancel": "Annulla",
+	"ok": "OK",
+	"date": "Data",
+	"add": "Aggiungi",
+	"name": "Nome",
+	"type": "Tipo",
+	"dimension": "Dimensioni",
+	"actions": "Azioni",
+	"noFileAvailable": "Nessun file disponibile",
+	"min": "Minimo",
+	"max": "Massimo",
+	"search": "Cerca",
+	"columns": "Colonne"
+}
