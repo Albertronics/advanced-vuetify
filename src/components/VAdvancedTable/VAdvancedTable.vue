@@ -60,23 +60,63 @@
 
 				<template v-slot:body.prepend v-if="filterActive">
 					<tr>
-						<td	v-for="item in [{ selectionControls: true }].concat(headers.filter(el => selectedGroupBy !== el.value))"	:key="item.title">
-							<v-select	v-if="item.selectionControls"	:items="selectionFilters"	v-model="selectionFilter" item-text="name" item-value="id"></v-select>
+						<td	v-for="(item, index) in [{ selectionControls: true }].concat(headers.filter(el => selectedGroupBy !== el.value))" :key="index">
+							<v-select
+								v-if="item.selectionControls"
+								v-model="selectionFilter"
+								:items="selectionFilters"
+							 	item-text="name" item-value="id" />
 
-							<v-text-field	v-if="item.dataType === 'text' && !item.options" v-model="filters[item.index]">
+							<v-text-field	v-if="item.dataType === 'text' && !item.options" v-model="filters[index - 1]">
 								<template v-slot:prepend-inner v-if="item.caseSensitiveSelector">
-									<v-icon @click="item.caseSensitive = !item.caseSensitive" :color="item.caseSensitive ? 'primary' : 'grey'">mdi-format-letter-case</v-icon>
+									<v-icon
+										@click="item.caseSensitive = !item.caseSensitive; $forceUpdate(); filters.splice()"
+										:color="item.caseSensitive ? 'primary' : 'grey'">
+										mdi-format-letter-case
+									</v-icon>
 								</template>
 							</v-text-field>
 
-							<v-combobox	v-if="item.dataType === 'text' && item.options" v-model="filters[item.index]" :items="item.options" :multiple="item.multiple" clearable :return-object="!!item.optionValue" small-chips :item-text="item.optionText"></v-combobox>
+							<v-autocomplete
+								v-if="item.dataType === 'text' && item.options"
+								v-model="filters[index - 1]"
+								clearable
+								:small-chips="item.multiple"
+								:items="item.options"
+								:multiple="item.multiple"
+								:item-value="item.optionValue || null"
+								:item-text="item.optionValue" />
 
-							<v-combobox	v-if="item.dataType === 'boolean'" v-model="filters[item.index]" :items="booleanOptions" item-value="id" item-text="text"></v-combobox>
-							<v-date-range	v-if="item.dataType === 'date'" v-model="filters[item.index]"	:format="item.dateFormat" label=""></v-date-range>
-							<number-filter v-if="item.dataType === 'number'" v-model="filters[item.index]"></number-filter>
+							<v-autocomplete
+								v-if="item.dataType === 'boolean'"
+								v-model="filters[index - 1]"
+								:items="booleanOptions"
+								clearable
+								item-value="id" item-text="text" />
 
-							<v-text-field	v-if="item.dataType === 'array' && !item.options"	v-model="filters[item.index]"></v-text-field>
-							<v-combobox	v-if="item.dataType === 'array' && item.options" v-model="filters[item.index]" :items="item.options" :multiple="item.multiple" clearable :return-object="!!item.optionValue" small-chips :item-text="item.optionValue"></v-combobox>
+							<v-date-range
+								v-if="item.dataType === 'date'"
+								v-model="filters[index - 1]"
+								:format="item.dateFormat"
+								label="" />
+
+							<number-filter
+								v-if="item.dataType === 'number'"
+								v-model="filters[index - 1]" />
+
+							<v-text-field
+								v-if="item.dataType === 'array' && !item.options"
+								v-model="filters[index - 1]" />
+
+							<v-autocomplete
+								v-if="item.dataType === 'array' && item.options"
+								v-model="filters[index - 1]"
+								clearable
+								:items="item.options"
+								:multiple="item.multiple"
+								:small-chips="item.multiple"
+								:item-value="item.optionValue || null"
+								:item-text="item.optionValue" />
 						</td>
 					</tr>
 				</template>
@@ -178,8 +218,8 @@ export default
 			if(column.groupBy)
 				this.groupByOptions.push({ value: column.value, text: column.text });
 
-			column.index = i;
-			column.caseSensitive = true;
+			if(column.dataType === 'text')
+				column.caseSensitive = true;
 
 			switch (column.dataType)
 			{
@@ -209,16 +249,15 @@ export default
 		selectionFilters()
 		{
 			return [
-				{ name: this.translate('all'), id: 0} ,
-				{ name: this.translate('selected'), id: 1} ,
-				{ name: this.translate('notSelected'), id: 2 }
+				{ id: 0, name: this.translate('all') },
+				{ id: 1, name: this.translate('selected') },
+				{ id: 2, name: this.translate('notSelected') }
 			]
 		},
 
 		booleanOptions()
 		{
 			return [
-				{ id: 'all', text: this.translate('all') },
 				{ id: 'yes', text: this.translate('yes') },
 				{ id: 'no', text: this.translate('no' )}
 			]
@@ -269,19 +308,16 @@ export default
 			if (!filterValue)
 				return true;
 
-			if (column.options)
+			if (column.multiple)
 			{
 				if (filterValue.length === 0)
 					return true;
-
-				if (column.optionValue)
-					return filterValue.filter(el => el[column.optionValue] === value).length > 0;
 
 				return filterValue.filter(el => el === value).length > 0;
 			}
 
 			if (!column.caseSensitive)
-				return value.toLowerCase().toString().includes(filterValue.toLowerCase());
+				return value.toLowerCase().includes(filterValue.toLowerCase());
 
 			return value.includes(filterValue);
 		},
@@ -293,12 +329,7 @@ export default
 			if(!filterValue)
 				return true;
 
-			switch (filterValue.id)
-			{
-				case 'yes': return value === true;
-				case 'no': return value === false;
-				case 'all': return true;
-			}
+			return value === (filterValue === 'yes');
 		},
 
 		filterDate(value, filterIndex, column)
@@ -347,40 +378,25 @@ export default
 			if (!filterValue)
 				return true;
 
-			if(column.options && filterValue.length === 0)
+			if(filterValue.length === 0)
 				return true;
 
 			return value.filter(val =>
 			{
-				if(!column.objectValue && !column.options)
+				if(column.multiple)
+				{
+					if(column.objectValue)
+						return filterValue.some(el => String(val[column.objectValue]).includes(el));
+
+					return filterValue.some(el => String(val).includes(el));
+				}
+
+				if(!column.objectValue)
 					return String(val).includes(filterValue);
 
-				if(column.objectValue && !column.options)
+				if(column.objectValue)
 					return String(val[column.objectValue]).includes(filterValue);
 
-				if(!column.objectValue && column.options)
-				{
-					if(column.optionValue)
-					{
-						return filterValue
-							.map(el => el[column.optionValue])
-							.some(el => String(val).includes(el));
-					}
-
-					return String(val).includes(filterValue);
-				}
-
-				if(column.objectValue && column.options)
-				{
-					if(column.optionValue)
-					{
-						return filterValue
-							.map(el => el[column.optionValue])
-							.some(el => val[column.objectValue].includes(el));
-					}
-
-					return filterValue.includes(val[column.objectValue]);
-				}
 			}).length > 0;
 		}
 	}
