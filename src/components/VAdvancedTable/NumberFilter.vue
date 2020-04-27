@@ -33,9 +33,7 @@ export default
 {
 	name: "number-filter",
 
-	props: {
-		value: { type: Object, required: true, default: () => {} }
-	},
+	props: ['value'],
 
 	data()
 	{
@@ -53,15 +51,15 @@ export default
 	watch:
 	{
 		operator(val) {
-			this.$emit('input', {operator: val, minimum: this.minimum, maximum: this.maximum});
+			this.$emit('input', { operator: val, minimum: this.minimum, maximum: this.maximum });
 		},
 
 		minimum(val) {
-			this.$emit('input', {operator: this.operator, minimum: val, maximum: this.maximum});
+			this.$emit('input', { operator: this.operator, minimum: val, maximum: this.maximum });
 		},
 
 		maximum(val) {
-			this.$emit('input', {operator: this.operator, minimum: this.minimum, maximum: val});
+			this.$emit('input', { operator: this.operator, minimum: this.minimum, maximum: val });
 		}
 	},
 

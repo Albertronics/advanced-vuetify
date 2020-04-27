@@ -67,7 +67,7 @@
 								:items="selectionFilters"
 							 	item-text="name" item-value="id" />
 
-							<v-text-field	v-if="item.dataType === 'text' && !item.options" v-model="filters[index - 1]">
+							<v-text-field	v-if="item.dataType === 'text' && !item.options" v-model="filters[item.index]">
 								<template v-slot:prepend-inner v-if="item.caseSensitiveSelector">
 									<v-icon
 										@click="item.caseSensitive = !item.caseSensitive; $forceUpdate(); filters.splice()"
@@ -79,7 +79,7 @@
 
 							<v-autocomplete
 								v-if="item.dataType === 'text' && item.options"
-								v-model="filters[index - 1]"
+								v-model="filters[item.index]"
 								clearable
 								:small-chips="item.multiple"
 								:items="item.options"
@@ -89,28 +89,28 @@
 
 							<v-autocomplete
 								v-if="item.dataType === 'boolean'"
-								v-model="filters[index - 1]"
+								v-model="filters[item.index]"
 								:items="booleanOptions"
 								clearable
 								item-value="id" item-text="text" />
 
 							<v-date-range
 								v-if="item.dataType === 'date'"
-								v-model="filters[index - 1]"
+								v-model="filters[item.index]"
 								:format="item.dateFormat"
 								label="" />
 
 							<number-filter
 								v-if="item.dataType === 'number'"
-								v-model="filters[index - 1]" />
+								v-model="filters[item.index]" />
 
 							<v-text-field
 								v-if="item.dataType === 'array' && !item.options"
-								v-model="filters[index - 1]" />
+								v-model="filters[item.index]" />
 
 							<v-autocomplete
 								v-if="item.dataType === 'array' && item.options"
-								v-model="filters[index - 1]"
+								v-model="filters[item.index]"
 								clearable
 								:items="item.options"
 								:multiple="item.multiple"
@@ -217,6 +217,8 @@ export default
 
 			if(column.groupBy)
 				this.groupByOptions.push({ value: column.value, text: column.text });
+
+			column.index = i;
 
 			if(column.dataType === 'text')
 				column.caseSensitive = true;
