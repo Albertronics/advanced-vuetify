@@ -18,5 +18,7 @@ export default {
 	"min": "Minimum",
 	"max": "Maximum",
 	"search": "Search",
-	"columns": "Columns"
+	"columns": "Columns",
+	"true": "True",
+	"false": "False"
 }

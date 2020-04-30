@@ -3,8 +3,12 @@
 		<v-content>
 			<v-container>
 				<v-row>
+					<v-col cols="12">
+						<v-btn @click="data.splice(1, 1)">Elimina</v-btn>
+					</v-col>
+
 					<v-col>
-						<v-advanced-table :columns="cols" :data="data"></v-advanced-table>
+						<v-advanced-table ref="table" v-model="data" :columns="cols"></v-advanced-table>
 					</v-col>
 				</v-row>
 			</v-container>
@@ -20,8 +24,27 @@
 		data()
 		{
 			return {
-				cols: [{text: 'Età', value: 'age', dataType: 'number'}],
-				data: [{age: 18}, {age: '25'}]
+				cols: [
+					{text: 'ID', value: 'id', dataType: 'number'},
+					{text: 'Attivo', value: 'active', dataType: 'boolean',groupBy: true}
+				],
+
+				data: [
+					{
+						id: 0,
+						active: true
+					},
+
+					{
+						id: 1,
+						active: false
+					},
+
+					{
+						id: 2,
+						active: false
+					}
+				]
 			}
 		}
 	}

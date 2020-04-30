@@ -36,13 +36,13 @@
 					<v-simple-checkbox :color="color" v-bind="props" v-on="on"></v-simple-checkbox>
 				</template>
 
-				<template v-slot:group.header="{ toggle, group, groupBy, items, isOpen }">
+				<template v-slot:group.header="{ toggle, group, groupBy, items, isOpen, headers }">
 					<td :colspan="columns.length + 1" class="text-start">
 						<v-btn icon @click="toggle">
 							<v-icon>{{isOpen ? 'mdi-minus' : 'mdi-plus'}}</v-icon>
 						</v-btn>
 
-						<b>{{ columns.filter(el => el.value === groupBy[0])[0].text }}: {{ group }} ({{ items.length }})</b>
+						<b>{{ columnGroupedBy.text }}: {{ getGroupByValue(group) }} ({{ items.length }})</b>
 
 						<v-btn icon @click="selectedGroupBy = null">
 							<v-icon>mdi-close</v-icon>
@@ -157,7 +157,7 @@ export default
 	{
 		color: { type: String, default: 'primary' },
 		columns: { type: Array, required: true },
-		data: { type: Array, required: true	},
+		value: { type: Array, required: true },
 		tableKey: {	type: String,	default: 'id' },
 		slots: { type: Array,	default: () => [] },
 		expand: {	type: Boolean, default: false },
@@ -171,6 +171,8 @@ export default
 		return {
 			filterActive: false,
 
+			data: this.value,
+
 			selected: [],	headers: [],	allHeaders: [], filters: [], groupByOptions: [],
 			selectedGroupBy: null,
 
@@ -180,6 +182,10 @@ export default
 
 	watch:
 	{
+		data(val) {
+			this.$emit('input', val)
+		},
+
 		selected(val) {
 			this.$emit('selected', val)
 		},
@@ -261,7 +267,7 @@ export default
 		{
 			return [
 				{ id: 'yes', text: this.translate('yes') },
-				{ id: 'no', text: this.translate('no' )}
+				{ id: 'no', text: this.translate('no' ) }
 			]
 		},
 
@@ -275,35 +281,38 @@ export default
 
 				default: return this.data;
 			}
+		},
+
+		columnGroupedBy() {
+			return this.columns.filter(el => el.value === this.selectedGroupBy)[0]
 		}
 	},
 
 	methods:
 	{
-		translate(key) {
-			return languages[this.$vuetify.lang.current][key]
-		},
-
 		exportToExcel(name)	{
 			// TODO
 		},
 
-		removeElement()
+		removeSelectedRows()
 		{
-			const length = this.selected.length;
-
-			for (let i = 0; i < length; i++)
-			{
-				const element = this.selected[i];
-				const index = this.data.findIndex(el => el[this.tableKey] === element[this.tableKey]);
-
-				this.data.splice(index, 1);
-			}
-
+			this.data = this.data.filter(el => this.selected.findIndex(val => val[this.tableKey] === el[this.tableKey]) === -1)
 			this.selected = [];
 		},
 
-		filterText(value, filterIndex, column)
+		translate(key) {
+			return languages[this.$vuetify.lang.current][key]
+		},
+
+		getGroupByValue(group)
+		{
+			if(this.columnGroupedBy.dataType === 'boolean')
+				return this.translate(group ? 'true' : 'false')
+
+			return group
+		},
+
+		filterText(elementValue, filterIndex, column)
 		{
 			const filterValue = this.filters[filterIndex];
 
@@ -315,26 +324,26 @@ export default
 				if (filterValue.length === 0)
 					return true;
 
-				return filterValue.filter(el => el === value).length > 0;
+				return filterValue.filter(el => el === elementValue).length > 0;
 			}
 
 			if (!column.caseSensitive)
-				return value.toLowerCase().includes(filterValue.toLowerCase());
+				return elementValue.toLowerCase().includes(filterValue.toLowerCase());
 
-			return value.includes(filterValue);
+			return elementValue.includes(filterValue);
 		},
 
-		filterBoolean(value, filterIndex)
+		filterBoolean(elementValue, filterIndex)
 		{
 			const filterValue = this.filters[filterIndex];
 
 			if(!filterValue)
 				return true;
 
-			return value === (filterValue === 'yes');
+			return elementValue === (filterValue === 'yes');
 		},
 
-		filterDate(value, filterIndex, column)
+		filterDate(elementValue, filterIndex, column)
 		{
 			const filterValue = this.filters[filterIndex];
 
@@ -343,19 +352,19 @@ export default
 
 			const start = filterValue[0];
 			const end = filterValue[1];
-			const target = dayjs(value, column.dateFormat || 'YYYY-MM-DD');
+			const target = dayjs(elementValue, column.dateFormat || 'YYYY-MM-DD');
 
 			return target.isBetween(start, end, null, '[]');
 		},
 
-		filterNumber(val, filterIndex)
+		filterNumber(elementValue, filterIndex)
 		{
 			const { operator, minimum, maximum } = this.filters[filterIndex];
 
-			if(!operator || !val || !minimum || (operator === '<>' && !maximum))
+			if(!operator || !elementValue || !minimum || (operator === '<>' && !maximum))
 				return true;
 
-			const value = Number(val);
+			const value = Number(elementValue);
 			const min = Number(minimum);
 			const max = Number(maximum);
 
@@ -373,7 +382,7 @@ export default
 			}
 		},
 
-		filterArray(value, filterIndex, column)
+		filterArray(elementValue, filterIndex, column)
 		{
 			const filterValue = this.filters[filterIndex];
 
@@ -383,22 +392,14 @@ export default
 			if(filterValue.length === 0)
 				return true;
 
-			return value.filter(val =>
+			return elementValue.filter(el =>
 			{
+				const value = (column.objectValue) ? String(el[column.objectValue]) : String(el);
+
 				if(column.multiple)
-				{
-					if(column.objectValue)
-						return filterValue.some(el => String(val[column.objectValue]).includes(el));
+					return filterValue.some(el => value.includes(el));
 
-					return filterValue.some(el => String(val).includes(el));
-				}
-
-				if(!column.objectValue)
-					return String(val).includes(filterValue);
-
-				if(column.objectValue)
-					return String(val[column.objectValue]).includes(filterValue);
-
+				return value.includes(filterValue);
 			}).length > 0;
 		}
 	}
