@@ -2,7 +2,7 @@
 	<v-container>
 		<v-row dense>
 			<v-col cols="12" @drop.prevent="addDropFile" @dragover.prevent>
-				<input ref="fileUpload" type="file" hidden @input="addDropFile" multiple>
+				<input ref="fileUpload" type="file" hidden @input="addDropFile" multiple :accept="acceptedFileTypes">
 				<v-btn block :color="color" outlined @click="$refs.fileUpload.click()">{{ translate('add') }}</v-btn>
 			</v-col>
 
@@ -48,6 +48,7 @@
 		props:
 		{
 			value: { required: true },
+			acceptedFileTypes: { type: String, default: null },
 			fieldName: { type: String, default: 'attachments' },
 			color: { type: String, default: 'primary' }
 		},

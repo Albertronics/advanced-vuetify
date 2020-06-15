@@ -85,7 +85,7 @@
 								:items="item.options"
 								:multiple="item.multiple"
 								:item-value="item.optionValue || null"
-								:item-text="item.optionValue" />
+								:item-text="item.optionText || item.optionValue" />
 
 							<v-autocomplete
 								v-if="item.dataType === 'boolean'"
@@ -116,7 +116,7 @@
 								:multiple="item.multiple"
 								:small-chips="item.multiple"
 								:item-value="item.optionValue || null"
-								:item-text="item.optionValue" />
+								:item-text="item.optionText || item.optionValue" />
 						</td>
 					</tr>
 				</template>
@@ -160,6 +160,7 @@ export default
 		value: { type: Array, required: true },
 		tableKey: {	type: String,	default: 'id' },
 		slots: { type: Array,	default: () => [] },
+		defaultGroupBy: { type: Object, default: null },
 		expand: {	type: Boolean, default: false },
 		outlined: {	type: Boolean, default: false },
 		dense: {	type: Boolean, default: false },
@@ -174,7 +175,7 @@ export default
 			data: this.value,
 
 			selected: [],	headers: [],	allHeaders: [], filters: [], groupByOptions: [],
-			selectedGroupBy: null,
+			selectedGroupBy: this.defaultGroupBy,
 
 			selectionFilter: 0
 		}
@@ -292,6 +293,20 @@ export default
 	{
 		exportToExcel(name)	{
 			// TODO
+		},
+
+		updateSelectedRows(data)
+		{
+			for (let i = 0; i < this.selected.length; i++)
+			{
+				const rowIndex = this.data.findIndex(el => el[this.tableKey] === this.selected[i][this.tableKey])
+
+				for(const [key, value] of Object.entries(data))
+					this.data[rowIndex][key] = value;
+			}
+
+			this.data.splice();
+			this.selected = [];
 		},
 
 		removeSelectedRows()

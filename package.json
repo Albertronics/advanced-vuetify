@@ -1,6 +1,6 @@
 {
   "name": "advanced-vuetify",
-  "version": "v1.0.0-alpha.9",
+  "version": "v1.0.0-alpha.10",
   "description": "Advanced components based upon Vuetify's ones",
   "author": {
     "name": "Alberto Musciumarra",
@@ -20,7 +20,7 @@
     "*.js"
   ],
   "dependencies": {
-    "dayjs": "^1.8.15",
+    "dayjs": "^1.8.28",
     "file-saver": "^2.0.2",
     "vue-the-mask": "^0.11.1"
   },
@@ -29,13 +29,13 @@
     "@vue/cli-service": "~4.2.0",
     "@vue/test-utils": "1.0.0-beta.31",
     "deepmerge": "^4.2.2",
-    "fibers": "^4.0.2",
-    "sass": "^1.26.3",
+    "fibers": "^4.0.3",
+    "sass": "^1.26.8",
     "sass-loader": "^8.0.2",
     "vue": "^2.6.11",
     "vue-cli-plugin-vuetify": "~2.0.5",
     "vue-template-compiler": "^2.6.11",
-    "vuetify": "^2.2.20"
+    "vuetify": "^2.3.0"
   },
   "keywords": [
     "advanced",

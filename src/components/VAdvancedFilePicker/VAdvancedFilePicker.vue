@@ -2,7 +2,7 @@
 	<v-container class="pa-0">
 		<v-row dense>
 			<v-col cols="12" @drop.prevent="addDropFile" @dragover.prevent>
-				<input ref="fileUpload" type="file" hidden @input="addDropFile">
+				<input ref="fileUpload" type="file" hidden @input="addDropFile" :accept="acceptedFileTypes">
 
 				<v-text-field :color="color" :label="label" @click="$refs.fileUpload.click()" @click:clear="file = null" clearable :outlined="outlined" :dense="dense" :value="fileName" readonly :append-icon="appendIcon" @click:append="download">
 					<template v-if="avatarColor" v-slot:prepend>
@@ -24,6 +24,7 @@
 		props:
 		{
 			value: { required: true },
+			acceptedFileTypes: { type: String, default: null },
 			fieldName: { type: String, default: 'attachment' },
 			color: { type: String, default: 'primary' },
 			label: { type: String, default: 'File' },
