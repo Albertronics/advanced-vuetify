@@ -1,6 +1,6 @@
 {
   "name": "advanced-vuetify",
-  "version": "v1.0.0-alpha.10",
+  "version": "v1.0.0-alpha.11",
   "description": "Advanced components based upon Vuetify's ones",
   "author": {
     "name": "Alberto Musciumarra",
@@ -35,7 +35,7 @@
     "vue": "^2.6.11",
     "vue-cli-plugin-vuetify": "~2.0.5",
     "vue-template-compiler": "^2.6.11",
-    "vuetify": "^2.3.0"
+    "vuetify": "^2"
   },
   "keywords": [
     "advanced",

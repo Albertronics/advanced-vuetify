@@ -78,7 +78,7 @@
 			},
 
 			addDropFile(e) {
-				this.file = e.target && e.target.files[0] || e.dataTransfer.files[0];
+				this.file = (e.target && e.target.files[0]) || (e.dataTransfer && e.dataTransfer.files[0]);
 			},
 
 			download() {

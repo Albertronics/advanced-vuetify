@@ -92,7 +92,7 @@
 
 			addDropFile(e)
 			{
-				const rawFiles = e.target && e.target.files || e.dataTransfer.files;
+				const rawFiles = (e.target && e.target.files) || (e.dataTransfer && e.dataTransfer.files);
 				const newFiles = Array.from(rawFiles);
 
 				this.files = [...this.files, ...newFiles];
