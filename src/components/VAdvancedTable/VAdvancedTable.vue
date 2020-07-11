@@ -132,6 +132,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 import NumberFilter from './NumberFilter';
 import VDateRange from '../VDateRange/VDateRange';
 import * as languages from '../../lang';
+import zipcelx from 'zipcelx';
 
 dayjs.extend(customParseFormat);
 dayjs.extend(isBetween);
@@ -291,8 +292,82 @@ export default
 
 	methods:
 	{
-		exportToExcel(name)	{
-			// TODO
+		// credit: Vuetify's code
+		getNestedValue (obj, path, fallback)
+		{
+			const last = path.length - 1
+
+			if (last < 0) return obj === undefined ? fallback : obj
+
+			for (let i = 0; i < last; i++) {
+				if (obj == null) {
+					return fallback
+				}
+				obj = obj[path[i]]
+			}
+
+			if (obj == null) return fallback
+
+			return obj[path[last]] === undefined ? fallback : obj[path[last]]
+		},
+
+		// credit: Vuetify's code
+		getObjectValueByPath (obj, path, fallback)
+		{
+			if (obj == null || !path || typeof path !== 'string') return fallback
+			if (obj[path] !== undefined) return obj[path]
+			path = path.replace(/\[(\w+)\]/g, '.$1') // convert indexes to properties
+			path = path.replace(/^\./, '') // strip a leading dot
+
+			return this.getNestedValue(obj, path.split('.'), fallback)
+		},
+
+		exportToExcel(fileName = 'export')
+		{
+			if(this.selected.length === 0 || this.headers.length === 0)
+				return;
+
+			const excelSheet = [
+				this.headers.map(el => ({ value: el.text, type: 'string' }))
+			];
+
+			for (let i = 0; i < this.selected.length; i++)
+			{
+				const tableRow = this.selected[i];
+				const excelRow = [];
+
+				for (const column of this.headers)
+				{
+					const excelColumn = { type: 'string' };
+					const value = this.getObjectValueByPath(tableRow, column.value);
+
+					if(column.dataType === 'date') {
+						excelColumn.value = dayjs(value, tableRow.dateFormat || 'YYYY-MM-DD');
+					}
+					else if (column.dataType === 'array')	{
+						excelColumn.value = (column.objectValue) ? value.map(el => el[column.objectValue]).join(', ') : value.join(', ');
+					}
+					else if (column.dataType === 'boolean') {
+						excelColumn.value = this.translate(String(value))
+					}
+					else {
+						excelColumn.value = value
+					}
+
+					excelRow.push(excelColumn);
+				}
+
+				excelSheet.push(excelRow)
+			}
+
+			const config = {
+				filename: fileName,
+				sheet: {
+					data: excelSheet
+				}
+			};
+
+			zipcelx(config);
 		},
 
 		updateSelectedRows(data)

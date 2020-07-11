@@ -155,7 +155,7 @@
 					rules.push(v => !!v || 'Campo necessario');
 				}
 
-				if (this.onlyFuture)	{
+				if (this.onlyFuture) {
 					rules.push(v => !dayjs(v, this.format).isBefore(dayjs(), 'day') || 'Data nel passato');
 				}
 

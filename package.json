@@ -1,6 +1,6 @@
 {
   "name": "advanced-vuetify",
-  "version": "v1.0.0-alpha.11",
+  "version": "v1.0.0-alpha.12",
   "description": "Advanced components based upon Vuetify's ones",
   "author": {
     "name": "Alberto Musciumarra",
@@ -22,7 +22,8 @@
   "dependencies": {
     "dayjs": "^1.8.28",
     "file-saver": "^2.0.2",
-    "vue-the-mask": "^0.11.1"
+    "vue-the-mask": "^0.11.1",
+    "zipcelx": "^1.6.2"
   },
   "devDependencies": {
     "@vue/cli-plugin-unit-jest": "~4.2.0",
