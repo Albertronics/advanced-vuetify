@@ -26,7 +26,7 @@
 			<v-data-table
 				:show-expand="expand"	:groupBy="selectedGroupBy" :loading="loading"	@click:row="$emit('rowClicked', $event)"
 				:color="color" :headers="headers" :items="filterList"	:item-key="tableKey"
-				fixed-header class="elevation-0" show-select v-model="selected"	multi-sort>
+				fixed-header class="elevation-0" :show-select="showSelect" v-model="selected"	multi-sort>
 
 				<template v-slot:item.data-table-select="{ isSelected, select }">
 					<v-simple-checkbox :color="color"	:value="isSelected"	@input="select($event)"></v-simple-checkbox>
@@ -161,11 +161,12 @@ export default
 		value: { type: Array, required: true },
 		tableKey: {	type: String,	default: 'id' },
 		slots: { type: Array,	default: () => [] },
-		defaultGroupBy: { type: Object, default: null },
+		defaultGroupBy: { type: String, default: null },
 		expand: {	type: Boolean, default: false },
 		outlined: {	type: Boolean, default: false },
 		dense: {	type: Boolean, default: false },
-		loading: {	type: Boolean, default: false }
+		loading: {	type: Boolean, default: false },
+		showSelect: {	type: Boolean, default: true }
 	},
 
 	data()
@@ -338,6 +339,9 @@ export default
 
 				for (const column of this.headers)
 				{
+					if(!column.dataType)
+						continue;
+
 					const excelColumn = { type: 'string' };
 					const value = this.getObjectValueByPath(tableRow, column.value);
 
