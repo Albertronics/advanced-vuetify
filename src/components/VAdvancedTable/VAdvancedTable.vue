@@ -36,10 +36,14 @@
 					<v-simple-checkbox :color="color" v-bind="props" v-on="on"></v-simple-checkbox>
 				</template>
 
-				<template v-slot:group.header="{ toggle, group, groupBy, items, isOpen, headers }">
+				<template v-slot:group.summary="item">
+					<slot name="expanded-item" :item="item"></slot>
+				</template>
+
+				<template v-slot:group.header="{ toggle, group, items, isOpen, headers }">
 					<td :colspan="columns.length + 1" class="text-start">
 						<v-btn icon @click="toggle">
-							<v-icon>{{isOpen ? 'mdi-minus' : 'mdi-plus'}}</v-icon>
+							<v-icon>{{ isOpen ? 'mdi-minus' : 'mdi-plus' }}</v-icon>
 						</v-btn>
 
 						<b>{{ columnGroupedBy.text }}: {{ getGroupByValue(group) }} ({{ items.length }})</b>
@@ -60,7 +64,7 @@
 
 				<template v-slot:body.prepend v-if="filterActive">
 					<tr>
-						<td	v-for="(item, index) in [{ selectionControls: true }].concat(headers.filter(el => selectedGroupBy !== el.value))" :key="index">
+						<td	v-for="(item, index) in availableColumnFilters" :key="index">
 							<v-select
 								v-if="item.selectionControls"
 								v-model="selectionFilter"
@@ -164,8 +168,8 @@ export default
 		defaultGroupBy: { type: String, default: null },
 		expand: {	type: Boolean, default: false },
 		outlined: {	type: Boolean, default: false },
-		dense: {	type: Boolean, default: false },
-		loading: {	type: Boolean, default: false },
+		dense: { type: Boolean, default: false },
+		loading: { type: Boolean, default: false },
 		showSelect: {	type: Boolean, default: true }
 	},
 
@@ -176,7 +180,7 @@ export default
 
 			data: this.value,
 
-			selected: [],	headers: [],	allHeaders: [], filters: [], groupByOptions: [],
+			selected: [],	headers: [], allHeaders: [], filters: [], groupByOptions: [],
 			selectedGroupBy: this.defaultGroupBy,
 
 			selectionFilter: 0
@@ -257,6 +261,14 @@ export default
 
 	computed:
 	{
+		availableColumnFilters()
+		{
+			if(this.showSelect)
+				return [{ selectionControls: true }].concat(this.headers.filter(el => this.selectedGroupBy !== el.value))
+
+			return this.headers.filter(el => this.selectedGroupBy !== el.value)
+		},
+
 		selectionFilters()
 		{
 			return [
@@ -345,10 +357,7 @@ export default
 					const excelColumn = { type: 'string' };
 					const value = this.getObjectValueByPath(tableRow, column.value);
 
-					if(column.dataType === 'date') {
-						excelColumn.value = dayjs(value, tableRow.dateFormat || 'YYYY-MM-DD');
-					}
-					else if (column.dataType === 'array')	{
+					if (column.dataType === 'array') {
 						excelColumn.value = (column.objectValue) ? value.map(el => el[column.objectValue]).join(', ') : value.join(', ');
 					}
 					else if (column.dataType === 'boolean') {

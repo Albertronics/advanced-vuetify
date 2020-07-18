@@ -4,11 +4,11 @@
 			<v-container>
 				<v-row>
 					<v-col cols="12">
-						<v-btn @click="data.splice(1, 1)">Elimina</v-btn>
+						<v-btn @click="$refs.table.exportToExcel()">Esporta</v-btn>
 					</v-col>
 
 					<v-col>
-						<v-advanced-table ref="table" v-model="data" :columns="cols"></v-advanced-table>
+						<v-advanced-table :show-select="false" ref="table" v-model="data" :columns="cols"></v-advanced-table>
 					</v-col>
 				</v-row>
 			</v-container>
@@ -20,29 +20,34 @@
 	import VAdvancedTable from '../src/components/VAdvancedTable/VAdvancedTable';
 	export default
 	{
-		components: {VAdvancedTable},
+		components: { VAdvancedTable },
+
 		data()
 		{
 			return {
 				cols: [
-					{text: 'ID', value: 'id', dataType: 'number'},
-					{text: 'Attivo', value: 'active', dataType: 'boolean',groupBy: true}
+					{ text: 'ID', value: 'id', dataType: 'number' },
+					{ text: 'Attivo', value: 'active', dataType: 'boolean', groupBy: true },
+					{ text: 'Data', value: 'date', dataType: 'date', groupBy: true, dateFormat: 'DD/MM/YYYY' }
 				],
 
 				data: [
 					{
 						id: 0,
-						active: true
+						active: true,
+						date: '10/04/2020 11:30'
 					},
 
 					{
 						id: 1,
-						active: false
+						active: false,
+						date: '10/04/2020 12:30'
 					},
 
 					{
 						id: 2,
-						active: false
+						active: false,
+						date: '12/04/2020 13:25'
 					}
 				]
 			}
