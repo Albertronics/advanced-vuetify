@@ -2,6 +2,7 @@
 	<v-form v-model="valid">
 		<v-text-field
 				v-model="date" v-mask="dateMask" persistent-hint
+				@input="changed = true"
 				:hint="day" :placeholder="format" :label="label"
 				:color="color" :outlined="outlined" :dense="dense"
 				:rules="rules" append-icon="mdi-calendar" @click:append="dialogPicker = true" />
@@ -75,7 +76,7 @@
 				validFormats: ['DD/MM/YYYY', 'DD-MM-YYYY', 'YYYY-MM-DD', 'YYYY/MM/DD'],
 				masks: ['##/##/####', '##-##-####', '####-##-##', '####/##/##'],
 
-				date: null,
+				date: null, changed: false,
 
 				dialogPicker: false,
 				valid: false
@@ -89,7 +90,14 @@
 				immediate: true,
 				handler(val)
 				{
-					this.$emit('input', dayjs(val, this.format).format(this.outputFormat));
+					if(val)
+					{
+						const formattedDate = dayjs(val, this.changed ? this.format : this.inputFormat).format(this.outputFormat)
+						const valid = this.isValidDate(formattedDate, this.outputFormat);
+						
+						if(valid)
+							this.$emit('input', formattedDate);
+					}
 				}
 			},
 
@@ -178,16 +186,18 @@
 				}
 			},
 
-			isValidDate (date)
+			isValidDate (date, fromFormat = this.format)
 			{
-				const newDate = dayjs(date, this.format).format('YYYY-MM-DD');
+				const commonFormatDate = dayjs(date, fromFormat).format('YYYY-MM-DD');
 
-				if(newDate === 'Invalid Date' || dayjs(newDate, 'YYYY-MM-DD').format(this.format) !== date)
+				if(commonFormatDate.toString() === 'Invalid Date')
 					return false;
 
-				let [y, m, d] = newDate.split('-');
+				let [y, m, d] = commonFormatDate.split('-');
 
 				m = parseInt(m, 10) - 1;
+				d = parseInt(d, 10);
+				y = parseInt(y, 10);
 
 				return m >= 0 && m < 12 && d > 0 && d <= this.daysInMonth(m, y);
 			},

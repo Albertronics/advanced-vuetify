@@ -4,11 +4,12 @@
 			<v-container>
 				<v-row>
 					<v-col cols="12">
-						<v-btn @click="$refs.table.exportToExcel()">Esporta</v-btn>
+						<v-btn @click="$set(customer, 'birthDate1', '24/07/2020')">Change</v-btn>
 					</v-col>
 
 					<v-col>
-						<v-advanced-table :show-select="false" ref="table" v-model="data" :columns="cols"></v-advanced-table>
+						{{ customer.birthDate1 }}
+						<v-advanced-date-picker v-model="customer.birthDate1" format="DD/MM/YYYY" input-format="DD/MM/YYYY" output-format="DD/MM/YYYY"/>
 					</v-col>
 				</v-row>
 			</v-container>
@@ -17,39 +18,19 @@
 </template>
 
 <script>
-	import VAdvancedTable from '../src/components/VAdvancedTable/VAdvancedTable';
+	import VAdvancedDatePicker from '../src/components/VAdvancedDatePicker/VAdvancedDatePicker';
 	export default
 	{
-		components: { VAdvancedTable },
+		components: { VAdvancedDatePicker },
 
 		data()
 		{
 			return {
-				cols: [
-					{ text: 'ID', value: 'id', dataType: 'number' },
-					{ text: 'Attivo', value: 'active', dataType: 'boolean', groupBy: true },
-					{ text: 'Data', value: 'date', dataType: 'date', groupBy: true, dateFormat: 'DD/MM/YYYY' }
-				],
-
-				data: [
-					{
-						id: 0,
-						active: true,
-						date: '10/04/2020 11:30'
-					},
-
-					{
-						id: 1,
-						active: false,
-						date: '10/04/2020 12:30'
-					},
-
-					{
-						id: 2,
-						active: false,
-						date: '12/04/2020 13:25'
-					}
-				]
+				customer: {
+					birthDate1: '30/10/2000',
+					birthDate2: '2000-10-30',
+					birthDate3: '30-10-2000',
+				}
 			}
 		}
 	}
