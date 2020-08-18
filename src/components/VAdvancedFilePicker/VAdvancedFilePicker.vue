@@ -88,6 +88,10 @@
 
 		watch:
 		{
+			value(val) {
+				this.file = val
+			},
+
 			file(val)
 			{
 				this.formData = new FormData();

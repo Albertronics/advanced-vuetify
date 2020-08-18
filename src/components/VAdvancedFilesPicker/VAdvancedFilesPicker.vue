@@ -109,6 +109,10 @@
 
 		watch:
 		{
+			value(val) {
+				this.files = val || []
+			},
+
 			files(val)
 			{
 				this.formData = new FormData();

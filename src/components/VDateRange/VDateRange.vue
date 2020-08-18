@@ -50,6 +50,10 @@ export default
 
 	watch:
 	{
+		value(val) {
+			this.dates = val || []
+		},
+
 		dates(val)
 		{
 			const formattedRange = [];

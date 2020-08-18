@@ -8,7 +8,7 @@
 				:rules="rules" append-icon="mdi-calendar" @click:append="dialogPicker = true" />
 
 		<v-dialog ref="dialog" v-model="dialogPicker" :return-value.sync="date" persistent width="290px">
-			<v-date-picker v-model="dialogPickerDate" :first-day-of-week="firstDayOfWeek" :min="onlyFuture ? new Date().toJSON() : null">
+			<v-date-picker v-model="dialogPickerDate" :first-day-of-week="firstDayOfWeek" :min="minDate" :max="maxDate">
 				<v-spacer></v-spacer>
 				<v-btn text :color="color" @click="dialogPicker = false">{{ translate('cancel') }}</v-btn>
 				<v-btn text :color="color" @click="$refs.dialog.save(date)">{{ translate('ok') }}</v-btn>
@@ -66,7 +66,9 @@
 			mandatory: { type: Boolean, default: false },
 			outlined: { type: Boolean, default: false },
 			dense: { type: Boolean, default: false },
+
 			onlyFuture: { type: Boolean, default: false },
+			onlyPast: { type: Boolean, default: false },
 			showDay: { type: Boolean, default: false }
 		},
 
@@ -85,6 +87,14 @@
 
 		watch:
 		{
+			value:
+			{
+				immediate: true,
+				handler(val) {
+					this.date = val ? dayjs(val, this.inputFormat).format(this.format) : dayjs().format(this.format);
+				}
+			},
+
 			date:
 			{
 				immediate: true,
@@ -94,7 +104,7 @@
 					{
 						const formattedDate = dayjs(val, this.changed ? this.format : this.inputFormat).format(this.outputFormat)
 						const valid = this.isValidDate(formattedDate, this.outputFormat);
-						
+
 						if(valid)
 							this.$emit('input', formattedDate);
 					}
@@ -117,12 +127,16 @@
 			}
 		},
 
-		mounted() {
-			this.date = this.value ? dayjs(this.value, this.inputFormat).format(this.format) : dayjs().format(this.format);
-		},
-
 		computed:
 		{
+			minDate() {
+				return this.onlyFuture ? new Date().toJSON() : null
+			},
+
+			maxDate() {
+				return this.onlyPast ? new Date().toJSON() : null
+			},
+
 			dialogPickerDate:
 			{
 				get: function ()
@@ -167,6 +181,10 @@
 					rules.push(v => !dayjs(v, this.format).isBefore(dayjs(), 'day') || 'Data nel passato');
 				}
 
+				if(this.onlyPast) {
+					rules.push(v => !dayjs(v, this.format).isAfter(dayjs(), 'day') || 'Data nel futuro');
+				}
+
 				return rules;
 			}
 		},
@@ -177,12 +195,10 @@
 			{
 				switch (m)
 				{
-					case 1 :
-						return (y % 4 === 0 && y % 100) || y % 400 === 0 ? 29 : 28;
-					case 8 : case 3 : case 5 : case 10 :
-						return 30;
-					default :
-						return 31
+					case 1: return (y % 4 === 0 && y % 100) || y % 400 === 0 ? 29 : 28;
+					case 8 : case 3 : case 5 : case 10 : return 30;
+
+					default :	return 31
 				}
 			},
 

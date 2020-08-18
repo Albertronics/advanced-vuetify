@@ -189,6 +189,10 @@ export default
 
 	watch:
 	{
+		value(val) {
+			this.data = val
+		},
+
 		data(val) {
 			this.$emit('input', val)
 		},
