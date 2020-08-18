@@ -4,12 +4,18 @@
 			<v-container>
 				<v-row>
 					<v-col cols="12">
-						<v-btn @click="$set(customer, 'birthDate1', '24/07/2020')">Change</v-btn>
+						<v-btn @click="$set(customer, 'birthDate', '24/07/2020')">Change</v-btn>
+						<v-btn @click="$set(customer, 'birthDate', null)">Change to null</v-btn>
 					</v-col>
 
-					<v-col>
-						{{ customer.birthDate1 }}
-						<v-advanced-date-picker v-model="customer.birthDate1" format="DD/MM/YYYY" input-format="DD/MM/YYYY" output-format="DD/MM/YYYY"/>
+					<v-col cols="2">
+						{{ customer.birthDate }}
+
+						<v-advanced-date-picker
+							only-future show-day
+							v-model="customer.birthDate"
+							outlined dense mandatory inputFormat="DD/MM/YYYY"
+							label="Data" />
 					</v-col>
 				</v-row>
 			</v-container>
@@ -27,9 +33,7 @@
 		{
 			return {
 				customer: {
-					birthDate1: '30/10/2000',
-					birthDate2: '2000-10-30',
-					birthDate3: '30-10-2000',
+					birthDate: null
 				}
 			}
 		}
