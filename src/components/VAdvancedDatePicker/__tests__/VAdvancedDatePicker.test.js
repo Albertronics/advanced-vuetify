@@ -36,6 +36,6 @@ describe('VAdvancedDatePicker', () =>
 	{
 		const component = getMountedComponent(VAdvancedDatePicker, { value: null });
 
-		expect(component.vm.$data.date).toBe(dayjs().format('YYYY-MM-DD'));
+		expect(component.vm.$data.today).toBe(dayjs().format('YYYY-MM-DD'));
 	})
 });
