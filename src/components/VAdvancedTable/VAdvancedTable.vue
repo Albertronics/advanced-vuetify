@@ -468,7 +468,7 @@ export default
 		{
 			const { operator, minimum, maximum } = this.filters[filterIndex];
 
-			if(!operator || !elementValue || !minimum || (operator === '<>' && !maximum))
+			if(!operator || !minimum || (operator === '<>' && !maximum))
 				return true;
 
 			const value = Number(elementValue);

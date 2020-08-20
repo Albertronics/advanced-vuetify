@@ -3,19 +3,8 @@
 		<v-content>
 			<v-container>
 				<v-row>
-					<v-col cols="12">
-						<v-btn @click="$set(customer, 'birthDate', '24/07/2020')">Change</v-btn>
-						<v-btn @click="$set(customer, 'birthDate', null)">Change to null</v-btn>
-					</v-col>
-
-					<v-col cols="2">
-						{{ customer.birthDate }}
-
-						<v-advanced-date-picker
-							only-future show-day
-							v-model="customer.birthDate"
-							outlined dense mandatory inputFormat="DD/MM/YYYY"
-							label="Data" />
+					<v-col>
+						<v-advanced-table v-model="customers" :columns="headers"></v-advanced-table>
 					</v-col>
 				</v-row>
 			</v-container>
@@ -25,16 +14,22 @@
 
 <script>
 	import VAdvancedDatePicker from '../src/components/VAdvancedDatePicker/VAdvancedDatePicker';
+	import VAdvancedTable from '@/components/VAdvancedTable/VAdvancedTable';
 	export default
 	{
-		components: { VAdvancedDatePicker },
+		components: {VAdvancedTable, VAdvancedDatePicker },
 
 		data()
 		{
 			return {
-				customer: {
-					birthDate: null
-				}
+				headers: [
+					{ dataType: 'number', value: 'credits', text: 'Punti' }
+				],
+				customers: [
+					{ id: 0, credits: 25 },
+					{ id: 1, credits: 35 },
+					{ id: 2, credits: 0 }
+				]
 			}
 		}
 	}

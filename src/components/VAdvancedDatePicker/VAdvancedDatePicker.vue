@@ -39,6 +39,7 @@
 			mandatory: { type: Boolean, default: false },
 			outlined: { type: Boolean, default: false },
 			dense: { type: Boolean, default: false },
+			disabled: { type: Boolean, default: false },
 
 			onlyFuture: { type: Boolean, default: false },
 			onlyPast: { type: Boolean, default: false },
@@ -48,8 +49,7 @@
 		data()
 		{
 			return {
-				today: dayjs().format('YYYY-MM-DD'),
-				date: this.value ? dayjs(this.value, this.inputFormat).format('YYYY-MM-DD') : this.today,
+				date: this.value ? dayjs(this.value, this.inputFormat).format('YYYY-MM-DD') : null,
 				valid: false,
 			};
 		},
@@ -61,7 +61,7 @@
 				const outputFormattedDate = dayjs(this.date, 'YYYY-MM-DD').format(this.outputFormat)
 
 				if(val !== outputFormattedDate)
-					this.date = val ? dayjs(val, this.inputFormat).format('YYYY-MM-DD') : this.today
+					this.date = val ? dayjs(val, this.inputFormat).format('YYYY-MM-DD') : null
 			},
 
 			date(val)
