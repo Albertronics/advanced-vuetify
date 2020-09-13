@@ -1,10 +1,10 @@
 <template>
 	<v-menu v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y min-width="290px">
 		<template v-slot:activator="{ on }">
-			<v-text-field v-model="dateRangeText" :label="label" readonly v-on="on" :outlined="outlined" :dense="dense" @click:clear="dates = []" clearable></v-text-field>
+			<v-text-field v-model="dateRangeText" :label="label" :color="color" readonly v-on="on" :outlined="outlined" :dense="dense" @click:clear="dates = []" clearable></v-text-field>
 		</template>
 
-		<v-date-picker color="primary" range v-model="dates" first-day-of-week="1"></v-date-picker>
+		<v-date-picker :color="color" range v-model="dates" first-day-of-week="1"></v-date-picker>
 	</v-menu>
 </template>
 
@@ -17,6 +17,7 @@ export default
 
 	props:
 	{
+		color: { type: String, default: 'primary' },
 		value: { type: Array, required: true },
 		outlined: { type: Boolean, default: false },
 		dense: { type: Boolean, default: false },

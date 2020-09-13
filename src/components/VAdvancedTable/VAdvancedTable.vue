@@ -68,10 +68,11 @@
 							<v-select
 								v-if="item.selectionControls"
 								v-model="selectionFilter"
+								:color="color"
 								:items="selectionFilters"
 							 	item-text="name" item-value="id" />
 
-							<v-text-field	v-if="item.dataType === 'text' && !item.options" v-model="filters[item.index]">
+							<v-text-field	v-if="item.dataType === 'text' && !item.options" v-model="filters[item.index]" :color="color">
 								<template v-slot:prepend-inner v-if="item.caseSensitiveSelector">
 									<v-icon
 										@click="item.caseSensitive = !item.caseSensitive; $forceUpdate(); filters.splice()"
@@ -84,7 +85,7 @@
 							<v-autocomplete
 								v-if="item.dataType === 'text' && item.options"
 								v-model="filters[item.index]"
-								clearable
+								clearable :color="color"
 								:small-chips="item.multiple"
 								:items="item.options"
 								:multiple="item.multiple"
@@ -95,27 +96,30 @@
 								v-if="item.dataType === 'boolean'"
 								v-model="filters[item.index]"
 								:items="booleanOptions"
-								clearable
+								clearable :color="color"
 								item-value="id" item-text="text" />
 
 							<v-date-range
 								v-if="item.dataType === 'date'"
 								v-model="filters[item.index]"
+								:color="color"
 								:format="item.dateFormat"
 								label="" />
 
 							<number-filter
 								v-if="item.dataType === 'number'"
+								:color="color"
 								v-model="filters[item.index]" />
 
 							<v-text-field
 								v-if="item.dataType === 'array' && !item.options"
+								:color="color"
 								v-model="filters[item.index]" />
 
 							<v-autocomplete
 								v-if="item.dataType === 'array' && item.options"
 								v-model="filters[item.index]"
-								clearable
+								clearable :color="color"
 								:items="item.options"
 								:multiple="item.multiple"
 								:small-chips="item.multiple"

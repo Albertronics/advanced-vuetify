@@ -1,7 +1,7 @@
 <template>
 	<v-row dense>
 		<v-col :cols="operator !== '<>' ? 12 : 6">
-			<v-text-field v-model="minimum" :placeholder="operator === '<>' ? translate('min') : null" type="number">
+			<v-text-field v-model="minimum" :color="color" :placeholder="operator === '<>' ? translate('min') : null" type="number">
 				<template v-slot:prepend>
 					<v-menu offset-y>
 						<template v-slot:activator="{ on }">
@@ -21,7 +21,7 @@
 		</v-col>
 
 		<v-col v-if="operator === '<>'" cols="6">
-			<v-text-field v-model="maximum" :placeholder="translate('max')" type="number"></v-text-field>
+			<v-text-field v-model="maximum" :color="color" :placeholder="translate('max')" type="number"></v-text-field>
 		</v-col>
 	</v-row>
 </template>
@@ -33,7 +33,11 @@ export default
 {
 	name: "number-filter",
 
-	props: ['value'],
+	props:
+	{
+		value: { required: true },
+		color: { type: String, default: 'primary' }
+	},
 
 	data()
 	{
