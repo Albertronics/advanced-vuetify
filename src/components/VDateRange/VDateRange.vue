@@ -51,7 +51,11 @@ export default
 
 	watch:
 	{
-		value(val) {
+		value(val, oldVal)
+		{
+			if(JSON.stringify(val) === JSON.stringify(oldVal))
+				return
+
 			this.dates = val || []
 		},
 
