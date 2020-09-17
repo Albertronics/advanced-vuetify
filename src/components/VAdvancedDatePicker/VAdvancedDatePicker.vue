@@ -66,12 +66,16 @@ export default
 			this.date = val ? dayjs(val, this.inputFormat).format('YYYY-MM-DD') : null
 		},
 
-		date(val)
+		date:
 		{
-			const outputFormattedDate = dayjs(val, 'YYYY-MM-DD').format(this.outputFormat)
+			immediate: true,
+			handler(val)
+			{
+				const outputFormattedDate = dayjs(val, 'YYYY-MM-DD').format(this.outputFormat)
 
-			if(outputFormattedDate !== 'Invalid Date')
-				this.$emit('input', outputFormattedDate)
+				if(outputFormattedDate !== 'Invalid Date')
+					this.$emit('input', outputFormattedDate)
+			}
 		},
 
 		day(val) {
