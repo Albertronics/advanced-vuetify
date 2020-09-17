@@ -56,11 +56,12 @@ export default
 
 	watch:
 	{
-		value(val)
+		value(val, oldVal)
 		{
-			const oldOutputFormattedDate = dayjs(val, 'YYYY-MM-DD').format(this.outputFormat)
+			const outputFormattedDate = dayjs(val, this.inputFormat).format(this.outputFormat)
+			const oldOutputFormattedDate = dayjs(oldVal, 'YYYY-MM-DD').format(this.outputFormat)
 
-			if(val === oldOutputFormattedDate || oldOutputFormattedDate === 'Invalid Date')
+			if(outputFormattedDate === oldOutputFormattedDate || outputFormattedDate === 'Invalid Date')
 				return
 
 			this.date = val ? dayjs(val, this.inputFormat).format('YYYY-MM-DD') : null

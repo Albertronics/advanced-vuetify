@@ -109,8 +109,10 @@
 
 		watch:
 		{
-			value(val) {
-				this.files = val || []
+			value(val, oldVal)
+			{
+				if(JSON.stringify(val) !== JSON.stringify(oldVal))
+					this.file = val || []
 			},
 
 			files(val)

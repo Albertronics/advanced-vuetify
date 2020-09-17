@@ -88,8 +88,10 @@
 
 		watch:
 		{
-			value(val) {
-				this.file = val
+			value(val, oldVal)
+			{
+				if(JSON.stringify(val) !== JSON.stringify(oldVal))
+					this.file = val
 			},
 
 			file(val)

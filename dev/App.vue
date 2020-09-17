@@ -3,8 +3,10 @@
 		<v-content>
 			<v-container>
 				<v-row>
+					<v-btn @click="date = '17/09/2020'"></v-btn>
+					{{ date }}
 					<v-col>
-						<v-advanced-table v-model="data" :columns="headers"></v-advanced-table>
+						<v-advanced-date-picker v-model="date" input-format="DD/MM/YYYY" outlined dense label="Data"/>
 					</v-col>
 				</v-row>
 			</v-container>
@@ -13,17 +15,14 @@
 </template>
 
 <script>
-import VAdvancedTable from '@/components/VAdvancedTable/VAdvancedTable';
+import VAdvancedDatePicker from '@/components/VAdvancedDatePicker/VAdvancedDatePicker';
 export default
 {
-	components: {VAdvancedTable},
+	components: {VAdvancedDatePicker},
 	data()
 	{
 		return {
-			data: [{date: '30/10/2000'}],
-			headers: [
-				{ dataType: 'date', value: 'date', text: 'Data', dateFormat: 'DD/MM/YYYY' }
-			]
+			date: '30/10/2000'
 		}
 	}
 }
