@@ -246,11 +246,11 @@ export default
 
 			switch (column.dataType)
 			{
-				case 'text': column.filter = value => this.filterText(value, i, column); break;
-				case 'boolean': column.filter = value => this.filterBoolean(value, i); break;
-				case 'date': column.filter = value => this.filterDate(value, i, column); break;
-				case 'number': column.filter = value => this.filterNumber(value, i); break;
-				case 'array': column.filter = value => this.filterArray(value, i, column); break;
+				case 'text': column.filter = (value, search, item) => this.filterText(value, i, column, item); break;
+				case 'boolean': column.filter = (value, search, item) => this.filterBoolean(value, i, column, item); break;
+				case 'date': column.filter = (value, search, item) => this.filterDate(value, i, column, item); break;
+				case 'number': column.filter = (value, search, item) => this.filterNumber(value, i, column, item); break;
+				case 'array': column.filter = (value, search, item) => this.filterArray(value, i, column, item); break;
 			}
 
 			if(column.dataType === 'date')
@@ -423,8 +423,9 @@ export default
 			return group
 		},
 
-		filterText(elementValue, filterIndex, column)
+		filterText(elementValue, filterIndex, column, item)
 		{
+			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
 			if (!filterValue)
@@ -435,27 +436,29 @@ export default
 				if (filterValue.length === 0)
 					return true;
 
-				return filterValue.filter(el => el === elementValue).length > 0;
+				return filterValue.filter(el => el === elementToFilterAgainst).length > 0;
 			}
 
 			if (!column.caseSensitive)
-				return elementValue.toLowerCase().includes(filterValue.toLowerCase());
+				return elementToFilterAgainst.toLowerCase().includes(filterValue.toLowerCase());
 
-			return elementValue.includes(filterValue);
+			return elementToFilterAgainst.includes(filterValue);
 		},
 
-		filterBoolean(elementValue, filterIndex)
+		filterBoolean(elementValue, filterIndex, column, item)
 		{
+			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
 			if(!filterValue)
 				return true;
 
-			return elementValue === (filterValue === 'yes');
+			return elementToFilterAgainst === (filterValue === 'yes');
 		},
 
-		filterDate(elementValue, filterIndex, column)
+		filterDate(elementValue, filterIndex, column, item)
 		{
+			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
 			if (!filterValue) return true;
@@ -463,19 +466,21 @@ export default
 
 			const start = filterValue[0];
 			const end = filterValue[1];
-			const target = dayjs(elementValue, column.dateFormat || 'YYYY-MM-DD');
+			const target = dayjs(elementToFilterAgainst, column.dateFormat || 'YYYY-MM-DD');
 
 			return target.isBetween(start, end, null, '[]');
 		},
 
-		filterNumber(elementValue, filterIndex)
+		filterNumber(elementValue, filterIndex, column, item)
 		{
+			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
+
 			const { operator, minimum, maximum } = this.filters[filterIndex];
 
 			if(!operator || !minimum || (operator === '<>' && !maximum))
 				return true;
 
-			const value = Number(elementValue);
+			const value = Number(elementToFilterAgainst);
 			const min = Number(minimum);
 			const max = Number(maximum);
 
@@ -493,8 +498,9 @@ export default
 			}
 		},
 
-		filterArray(elementValue, filterIndex, column)
+		filterArray(elementValue, filterIndex, column, item)
 		{
+			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
 			if (!filterValue)
@@ -503,7 +509,7 @@ export default
 			if(filterValue.length === 0)
 				return true;
 
-			return elementValue.filter(el =>
+			return elementToFilterAgainst.filter(el =>
 			{
 				const value = (column.objectValue) ? String(el[column.objectValue]) : String(el);
 
