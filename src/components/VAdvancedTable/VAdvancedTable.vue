@@ -428,7 +428,7 @@ export default
 			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
-			if (!filterValue)
+			if (!filterValue || !elementToFilterAgainst)
 				return true;
 
 			if (column.multiple)
@@ -450,7 +450,7 @@ export default
 			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
-			if(!filterValue)
+			if (!filterValue || !elementToFilterAgainst)
 				return true;
 
 			return elementToFilterAgainst === (filterValue === 'yes');
@@ -461,6 +461,7 @@ export default
 			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
+			if (!elementToFilterAgainst) return true;
 			if (!filterValue) return true;
 			if (!filterValue[1]) return true;
 
@@ -503,7 +504,7 @@ export default
 			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
-			if (!filterValue)
+			if (!filterValue || !elementToFilterAgainst)
 				return true;
 
 			if(filterValue.length === 0)
