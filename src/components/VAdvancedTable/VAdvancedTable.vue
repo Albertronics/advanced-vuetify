@@ -103,8 +103,7 @@
 								v-if="item.dataType === 'date'"
 								v-model="filters[item.index]"
 								:color="color"
-								:format="item.dateFormat"
-								label="" />
+								:format="item.dateFormat" />
 
 							<number-filter
 								v-if="item.dataType === 'number'"
@@ -425,11 +424,16 @@ export default
 
 		filterText(elementValue, filterIndex, column, item)
 		{
-			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
+			let elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
-			if (!filterValue || !elementToFilterAgainst)
+			if (!filterValue)
 				return true;
+
+			if(filterValue === "null" && (elementToFilterAgainst === null || elementToFilterAgainst === undefined))
+				elementToFilterAgainst = "null";
+			else if(elementToFilterAgainst === null || elementToFilterAgainst === undefined)
+				return false;
 
 			if (column.multiple)
 			{
@@ -447,11 +451,16 @@ export default
 
 		filterBoolean(elementValue, filterIndex, column, item)
 		{
-			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
+			let elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
-			if (!filterValue || !elementToFilterAgainst)
+			if (!filterValue)
 				return true;
+
+			if(filterValue === "null" && (elementToFilterAgainst === null || elementToFilterAgainst === undefined))
+				elementToFilterAgainst = "null";
+			else if(elementToFilterAgainst === null || elementToFilterAgainst === undefined)
+				return false;
 
 			return elementToFilterAgainst === (filterValue === 'yes');
 		},
@@ -461,7 +470,6 @@ export default
 			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
-			if (!elementToFilterAgainst) return true;
 			if (!filterValue) return true;
 			if (!filterValue[1]) return true;
 
@@ -501,11 +509,16 @@ export default
 
 		filterArray(elementValue, filterIndex, column, item)
 		{
-			const elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
+			let elementToFilterAgainst = (typeof column.computedValue === 'function') ? column.computedValue(item) : elementValue
 			const filterValue = this.filters[filterIndex];
 
-			if (!filterValue || !elementToFilterAgainst)
+			if (!filterValue)
 				return true;
+
+			if(filterValue === "null" && (elementToFilterAgainst === null || elementToFilterAgainst === undefined))
+				elementToFilterAgainst = "null";
+			else if(elementToFilterAgainst === null || elementToFilterAgainst === undefined)
+				return false;
 
 			if(filterValue.length === 0)
 				return true;
