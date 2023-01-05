@@ -26,8 +26,8 @@
     "zipcelx": "^1.6.2"
   },
   "devDependencies": {
-    "@vue/cli-plugin-unit-jest": "~4.2.0",
-    "@vue/cli-service": "~4.2.0",
+    "@vue/cli-plugin-unit-jest": "~5.0.8",
+    "@vue/cli-service": "~5.0.8",
     "@vue/test-utils": "1.0.0-beta.31",
     "deepmerge": "^4.2.2",
     "fibers": "^4.0.3",
